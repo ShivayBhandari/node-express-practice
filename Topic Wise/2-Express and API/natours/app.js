@@ -1,14 +1,18 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
+// MIDDLEWARES
+
+app.use(morgan('dev'));
 app.use(express.json());
 
-app.use((req, res, next) => {
-    console.log('Hello from the middleware!!!!');
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log('Hello from the middleware!!!!');
+//     next();
+// });
 
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
@@ -16,6 +20,8 @@ app.use((req, res, next) => {
 });
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
+
+// ROUTE HANDLERS
 
 const getAllTours = (req, res) => {
     console.log(req.requestTime);
@@ -97,6 +103,7 @@ const deleteTour = (req, res) => {
     });
 };
 
+//ROUTES
 
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createTour);
@@ -107,6 +114,7 @@ const deleteTour = (req, res) => {
 app.route('/api/v1/tours').get(getAllTours).post(createTour)
 app.route('/api/v1/tours/:id').get(getTour).patch(updateTour).delete(deleteTour)
 
+// START SERVER
 
 const port = 3000;
 app.listen(port, () => {
